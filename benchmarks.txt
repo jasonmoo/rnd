@@ -1,0 +1,35 @@
+=== RUN   TestInt
+name		min		max		dev		dist
+MD4		104299		105503		1204		0.998852
+MD5		104203		105317		1114		0.998938
+SHA1		104394		105488		1094		0.998957
+SHA224		104508		105088		580		0.999447
+SHA256		104393		105449		1056		0.998993
+SHA384		104296		105193		897		0.999145
+SHA512		104291		105316		1025		0.999022
+RIPEMD160	104368		105673		1305		0.998755
+SHA3_224	104366		105262		896		0.999146
+SHA3_256	104307		105188		881		0.999160
+SHA3_384	104652		105237		585		0.999442
+SHA3_512	104499		105145		646		0.999384
+SHA512_224	104059		105422		1363		0.998700
+SHA512_256	104340		105678		1338		0.998724
+math/rand	104469		105369		900		0.999142
+--- PASS: TestInt (42.26s)
+PASS
+BenchmarkMD4-4       	 2000000	       818 ns/op	      32 B/op	       2 allocs/op
+BenchmarkMD5-4       	 3000000	       433 ns/op	      16 B/op	       1 allocs/op
+BenchmarkSHA1-4      	 3000000	       494 ns/op	      32 B/op	       1 allocs/op
+BenchmarkSHA224-4    	 2000000	       885 ns/op	      32 B/op	       1 allocs/op
+BenchmarkSHA256-4    	 2000000	       885 ns/op	      32 B/op	       1 allocs/op
+BenchmarkSHA384-4    	 1000000	      1026 ns/op	      48 B/op	       1 allocs/op
+BenchmarkSHA512-4    	 1000000	      1042 ns/op	      64 B/op	       1 allocs/op
+BenchmarkRIPEMD160-4 	 1000000	      1698 ns/op	      32 B/op	       1 allocs/op
+BenchmarkSHA3_224-4  	 1000000	      1431 ns/op	     512 B/op	       3 allocs/op
+BenchmarkSHA3_256-4  	 1000000	      1410 ns/op	     512 B/op	       3 allocs/op
+BenchmarkSHA3_384-4  	 1000000	      1528 ns/op	     544 B/op	       3 allocs/op
+BenchmarkSHA3_512-4  	 1000000	      1444 ns/op	     576 B/op	       3 allocs/op
+BenchmarkSHA512_224-4	 1000000	      1071 ns/op	      32 B/op	       1 allocs/op
+BenchmarkSHA512_256-4	 1000000	      1158 ns/op	      32 B/op	       1 allocs/op
+BenchmarkMathRand-4  	100000000	        14.7 ns/op	       0 B/op	       0 allocs/op
+ok  	github.com/jasonmoo/rnd	67.201s

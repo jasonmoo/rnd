@@ -8,9 +8,27 @@ import (
 	"strconv"
 	"testing"
 	"text/tabwriter"
+	"unsafe"
 
 	"github.com/jasonmoo/oc"
 )
+
+var names = map[crypto.Hash]string{
+	crypto.MD4:        "MD4",
+	crypto.MD5:        "MD5",
+	crypto.SHA1:       "SHA1",
+	crypto.SHA224:     "SHA224",
+	crypto.SHA256:     "SHA256",
+	crypto.SHA384:     "SHA384",
+	crypto.SHA512:     "SHA512",
+	crypto.RIPEMD160:  "RIPEMD160",
+	crypto.SHA3_224:   "SHA3_224",
+	crypto.SHA3_256:   "SHA3_256",
+	crypto.SHA3_384:   "SHA3_384",
+	crypto.SHA3_512:   "SHA3_512",
+	crypto.SHA512_224: "SHA512_224",
+	crypto.SHA512_256: "SHA512_256",
+}
 
 func TestInt(t *testing.T) {
 
@@ -19,21 +37,21 @@ func TestInt(t *testing.T) {
 		runs     = 1 << 20
 	)
 
-	hashes := map[string]crypto.Hash{
-		"MD4":        crypto.MD4,        // import golang.org/x/crypto/md4
-		"MD5":        crypto.MD5,        // import crypto/md5
-		"SHA1":       crypto.SHA1,       // import crypto/sha1
-		"SHA224":     crypto.SHA224,     // import crypto/sha256
-		"SHA256":     crypto.SHA256,     // import crypto/sha256
-		"SHA384":     crypto.SHA384,     // import crypto/sha512
-		"SHA512":     crypto.SHA512,     // import crypto/sha512
-		"RIPEMD160":  crypto.RIPEMD160,  // import golang.org/x/crypto/ripemd160
-		"SHA3_224":   crypto.SHA3_224,   // import golang.org/x/crypto/sha3
-		"SHA3_256":   crypto.SHA3_256,   // import golang.org/x/crypto/sha3
-		"SHA3_384":   crypto.SHA3_384,   // import golang.org/x/crypto/sha3
-		"SHA3_512":   crypto.SHA3_512,   // import golang.org/x/crypto/sha3
-		"SHA512_224": crypto.SHA512_224, // import crypto/sha512
-		"SHA512_256": crypto.SHA512_256, // import crypto/sha512
+	hashes := []crypto.Hash{
+		crypto.MD4,        // import golang.org/x/crypto/md4
+		crypto.MD5,        // import crypto/md5
+		crypto.SHA1,       // import crypto/sha1
+		crypto.SHA224,     // import crypto/sha256
+		crypto.SHA256,     // import crypto/sha256
+		crypto.SHA384,     // import crypto/sha512
+		crypto.SHA512,     // import crypto/sha512
+		crypto.RIPEMD160,  // import golang.org/x/crypto/ripemd160
+		crypto.SHA3_224,   // import golang.org/x/crypto/sha3
+		crypto.SHA3_256,   // import golang.org/x/crypto/sha3
+		crypto.SHA3_384,   // import golang.org/x/crypto/sha3
+		crypto.SHA3_512,   // import golang.org/x/crypto/sha3
+		crypto.SHA512_224, // import crypto/sha512
+		crypto.SHA512_256, // import crypto/sha512
 	}
 
 	tabw := tabwriter.NewWriter(os.Stdout, 16, 8, 1, '\t', 0)
@@ -41,10 +59,10 @@ func TestInt(t *testing.T) {
 
 	fmt.Fprintln(tabw, "name\tmin\tmax\tdev\tdist")
 
-	for name, h := range hashes {
+	for _, h := range hashes {
 
 		rand := NewSource(h)
-		// rand.Seed([]byte("jason"))
+		rand.Seed([]byte("jason"))
 
 		set := oc.NewOc()
 
@@ -66,11 +84,13 @@ func TestInt(t *testing.T) {
 			// fmt.Println(k, "\t", v)
 		}
 
-		fmt.Fprintf(tabw, "%s\t%d\t%d\t%d\t%f\n", name, min, max, max-min, 1-(float64(max-min)/runs))
+		fmt.Fprintf(tabw, "%s\t%d\t%d\t%d\t%f\n", names[h], min, max, max-min, 1-(float64(max-min)/runs))
 		tabw.Flush()
 	}
 
-	source := mrand.New(mrand.NewSource(NewSource(crypto.SHA3_512).Int63()))
+	seedb := []byte{'j', 'a', 's', 'o', 'n', 0, 0, 0}
+	seed := *(*int64)(unsafe.Pointer(&seedb[0]))
+	source := mrand.New(mrand.NewSource(seed))
 
 	set := oc.NewOc()
 
