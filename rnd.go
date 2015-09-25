@@ -1,19 +1,9 @@
 package rnd
 
 import (
-	"crypto"
-	"crypto/rand"
 	"hash"
+	"math/rand"
 	"unsafe"
-
-	_ "crypto/md5"
-	_ "crypto/sha1"
-	_ "crypto/sha256"
-	_ "crypto/sha512"
-
-	_ "golang.org/x/crypto/md4"
-	_ "golang.org/x/crypto/ripemd160"
-	_ "golang.org/x/crypto/sha3"
 )
 
 type (
@@ -23,40 +13,19 @@ type (
 	}
 )
 
-func NewSource(h crypto.Hash) *Source {
-	seed := make([]byte, 8)
-	rand.Read(seed)
+func NewHashSource(f func() hash.Hash, seed []byte) rand.Source {
+	if len(seed) == 0 {
+		seed = []byte{0}
+	}
 	return &Source{
 		seed: seed,
-		h:    h.New(),
+		h:    f(),
 	}
 }
 
-func (s *Source) Seed(seed []byte) {
-	s.h.Write(seed)
-	s.seed = s.h.Sum(nil)
-}
-
-func (s *Source) Int() int {
-	return int(s.Int63())
-}
-
-func (s *Source) Intn(n int) int {
-	v := s.Int()
-	if mask := n - 1; n&mask == 0 { // n is power of two, can mask
-		return v & mask
-	}
-	// find evenly divisible max and look for
-	// number within it
-	const (
-		max_val = (^uint(0) >> 2)
-		bound   = ^(^uint(0) >> 1)
-	)
-	max := int(max_val - (bound % uint(n)))
-	for v > max {
-		v = s.Int()
-	}
-	return v % n
+func (s *Source) Seed(seed int64) {
+	seed8 := *(*[8]byte)(unsafe.Pointer(&seed))
+	s.seed = seed8[:]
 }
 
 func (s *Source) Int63() int64 {
@@ -66,6 +35,11 @@ func (s *Source) Int63() int64 {
 }
 
 func (s *Source) hash() {
-	s.h.Write(s.seed)
-	copy(s.seed, s.h.Sum(nil)[:8])
+	for i := 0; i < len(s.seed); i++ {
+		s.h.Write(s.seed)
+		sum := s.h.Sum(nil)
+		for j := 0; i < len(s.seed) && j < len(sum); i, j = i+1, j+1 {
+			s.seed[i] = sum[j]
+		}
+	}
 }
