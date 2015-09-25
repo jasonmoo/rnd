@@ -1,7 +1,6 @@
 package rnd
 
 import (
-	"encoding/binary"
 	"fmt"
 	"hash"
 	"math/rand"
@@ -9,7 +8,6 @@ import (
 	"strconv"
 	"testing"
 	"text/tabwriter"
-	"unsafe"
 
 	"github.com/jasonmoo/oc"
 )
@@ -56,7 +54,7 @@ var (
 func TestSource(t *testing.T) {
 
 	const (
-		set_size = 10
+		set_size = 128
 		runs     = 1 << 20
 	)
 
@@ -65,7 +63,7 @@ func TestSource(t *testing.T) {
 
 	fmt.Fprintln(tabw, "name\tmin\tmax\tdev\tdist\tmean\tstddev")
 
-	seed := NewCryptoRandBytes(8)
+	seed := NewCryptoRandSeed()
 
 	for _, name := range names {
 
@@ -103,8 +101,7 @@ func TestSource(t *testing.T) {
 		tabw.Flush()
 	}
 
-	seedi := *(*int64)(unsafe.Pointer(&seed[0]))
-	source := rand.New(rand.NewSource(seedi))
+	source := rand.New(rand.NewSource(seed))
 
 	set := oc.NewOc()
 	var numbers []float64
@@ -134,7 +131,7 @@ func TestSource(t *testing.T) {
 
 func TestBench(_ *testing.T) {
 
-	seed := NewCryptoRandBytes(8)
+	seed := NewCryptoRandSeed()
 
 	for _, name := range names {
 
@@ -150,7 +147,7 @@ func TestBench(_ *testing.T) {
 
 	}
 
-	source := rand.New(rand.NewSource(int64(binary.BigEndian.Uint64(seed))))
+	source := rand.New(rand.NewSource(seed))
 
 	r := testing.Benchmark(func(b *testing.B) {
 		for i := 0; i < b.N; i++ {
