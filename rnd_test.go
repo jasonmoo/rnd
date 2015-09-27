@@ -51,7 +51,7 @@ var (
 	}
 )
 
-func TestSource(t *testing.T) {
+func TestHashSource(t *testing.T) {
 
 	const (
 		set_size = 128
