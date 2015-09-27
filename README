@@ -1,0 +1,7 @@
+rnd
+
+prngs implemented with hash functions
+
+very WIP
+
+Satisfies `math/rand.Source` interface
