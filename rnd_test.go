@@ -30,6 +30,7 @@ var (
 		"SHA512_256": SHA512_256,
 		"FNV1_64":    FNV1_64,
 		"FNV1_64a":   FNV1_64a,
+		"MyShift":    MyShiftHash,
 	}
 	names = []string{
 		"MD4",
@@ -48,13 +49,35 @@ var (
 		"SHA512_256",
 		"FNV1_64",
 		"FNV1_64a",
+		"MyShift",
 	}
 )
+
+func TestRun(t *testing.T) {
+	t.Skip("too long")
+
+	seed := NewCryptoRandSeed()
+	source := rand.New(NewHashSource(MyShiftHash, seed))
+
+	start := source.Int63()
+	var ct int
+
+	for {
+		next := source.Int63()
+		if next == start {
+			break
+		}
+		ct++
+	}
+
+	fmt.Println(ct, "runs")
+
+}
 
 func TestHashSource(t *testing.T) {
 
 	const (
-		set_size = 128
+		set_size = 16
 		runs     = 1 << 20
 	)
 
@@ -85,13 +108,14 @@ func TestHashSource(t *testing.T) {
 
 		var min, max int64
 		for set.Next() {
-			_, v := set.KeyValue()
+			k, v := set.KeyValue()
 			if min == 0 || v < min {
 				min = v
 			}
 			if v > max {
 				max = v
 			}
+			_ = k
 			// fmt.Println(k, "\t", v)
 		}
 
