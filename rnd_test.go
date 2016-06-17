@@ -108,7 +108,8 @@ func TestHashSource(t *testing.T) {
 
 		var min, max int64
 		for set.Next() {
-			k, v := set.KeyValue()
+			k, vi := set.KeyValue()
+			v := int64(vi)
 			if min == 0 || v < min {
 				min = v
 			}
@@ -139,7 +140,8 @@ func TestHashSource(t *testing.T) {
 
 	var min, max int64
 	for set.Next() {
-		_, v := set.KeyValue()
+		_, vi := set.KeyValue()
+		v := int64(vi)
 		if min == 0 || v < min {
 			min = v
 		}
